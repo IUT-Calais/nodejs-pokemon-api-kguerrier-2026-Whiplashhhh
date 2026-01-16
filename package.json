@@ -12,6 +12,7 @@
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
+    "db:seed": "prisma seed",
     "test": "jest --runInBand",
     "test:coverage": "jest --coverage --runInBand"
   },
@@ -20,7 +21,7 @@
     "url": "git+https://github.com/vfourny/nodejs-pokedex-api.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "VANBAELINGHEM--DEZITTER Willem <willem.vanbaelinghem@proton.me>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/vfourny/nodejs-pokedex-api/issues"
