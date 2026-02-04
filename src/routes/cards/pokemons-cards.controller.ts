@@ -25,7 +25,7 @@ export const getPokemon = async (req: Request, res: Response) => {
             }
         });
         if (!card) { // si la carte n'existe pas
-            res.status(404).send("Card not found :/")
+            res.status(404).send(`Card not found, Id : "${cardId}" doesn't exist :/`)
             return
         } else { // sinon
             res.status(200).send(card);
@@ -76,7 +76,7 @@ export const patchPokemon = async (req: Request, res: Response) => {
             }
         });
         if (!card) {
-            res.status(404).send("Card not found :/")
+            res.status(404).send(`Card not found, Id : "${cardId}" doesn't exist :/`)
             return
         } else {
             //récupérer les données du body (json)
@@ -117,7 +117,7 @@ export const deletePokemon = async (req: Request, res: Response) => {
             }
         });
         if (!card) {
-            res.status(404).send("Card not found :/")
+            res.status(404).send(`Card not found, Id : "${cardId}" doesn't exist :/`)
             return
         } else {
             const pokemonToDelete = await prisma.pokemonCard.delete({
