@@ -1,5 +1,6 @@
 import express from 'express';
 import type {Request, Response, NextFunction} from 'express';
+import {cardRouter} from "./routes/cards/pokemons-cards.router";
 
 export const app = express();
 
@@ -14,7 +15,7 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
   next(); // Passe à la prochaine fonction middleware ou route
 });
 
-app.use('/cards', cardRouter);
+app.use('/pokemons-cards', cardRouter);
 
 export function stopServer() {
   server.close();
