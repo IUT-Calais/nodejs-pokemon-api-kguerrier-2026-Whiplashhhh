@@ -32,12 +32,12 @@ async function main() {
   await prisma.pokemonCard.create({
     data: {
       name: 'Charmander',
-      pokedexId: 3,
+      pokedexId: 4,
       type: { connect: { name: 'Fire'}},
       lifePoints: 30,
       size: 1,
       weight: 25,
-      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/3.png'
+      imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/004.png'
     }
   });
   await prisma.pokemonCard.create({
@@ -48,7 +48,7 @@ async function main() {
       lifePoints: 78,
       size: 1.7,
       weight: 90.5,
-      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/6.png'
+      imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/006.png'
     }
   });
 
