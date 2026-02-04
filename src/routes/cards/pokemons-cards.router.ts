@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import {getCards, getPokemon, postPokemon} from "./pokemons-cards.controller";
+import {getCards, getPokemon, patchPokemon, postPokemon} from "./pokemons-cards.controller";
 
 export const cardRouter = Router();
 
@@ -12,3 +12,7 @@ cardRouter.get('/:pokemonCardId', getPokemon)
 //##### POST #####
 // créer une carte
 cardRouter.post('/', postPokemon)
+
+//##### PATCH #####
+// modifier les données d'une carte
+cardRouter.patch('/:pokemonCardId', patchPokemon)
