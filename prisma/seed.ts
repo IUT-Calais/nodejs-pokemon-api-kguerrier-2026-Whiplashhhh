@@ -3,7 +3,9 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.pokemonCard.deleteMany()
   await prisma.type.deleteMany();
+
   await prisma.type.createMany({
     data: [
       { name: 'Normal' },
@@ -25,6 +27,29 @@ async function main() {
       { name: 'Steel' },
       { name: 'Fairy' },
     ],
+  });
+
+  await prisma.pokemonCard.create({
+    data: {
+      name: 'Charmander',
+      pokedexId: 3,
+      type: { connect: { name: 'Fire'}},
+      lifePoints: 30,
+      size: 1,
+      weight: 25,
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/3.png'
+    }
+  });
+  await prisma.pokemonCard.create({
+    data: {
+      name: 'Charizard',
+      pokedexId: 6,
+      type: { connect: { name: 'Fire'}},
+      lifePoints: 78,
+      size: 1.7,
+      weight: 90.5,
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/6.png'
+    }
   });
 
   console.log('Seed completed!');
