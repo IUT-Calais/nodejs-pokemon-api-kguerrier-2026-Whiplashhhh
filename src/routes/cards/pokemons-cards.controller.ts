@@ -44,7 +44,7 @@ export const postPokemon = async (req: Request, res: Response) => {
     const {name, pokedexId, typeId, lifePoints, size, weight, imageUrl} = req.body
 
     try {
-        const createdPokemon = await prisma.pokemonCard.create({
+        const pokemonToCreate = await prisma.pokemonCard.create({
             data: {
                 name: name,
                 pokedexId: pokedexId,
@@ -55,7 +55,7 @@ export const postPokemon = async (req: Request, res: Response) => {
                 imageUrl: imageUrl
             }
         })
-        res.status(201).send(createdPokemon)
+        res.status(201).send(pokemonToCreate)
     } catch (error) {
         res.status(500).send({ error : 'Une erreur est survenue'});
     }
@@ -77,12 +77,13 @@ export const patchPokemon = async (req: Request, res: Response) => {
         });
         if (!card) {
             res.status(404).send("Card not found :/")
+            return
         } else {
             //récupérer les données du body (json)
             const {name, pokedexId, typeId, lifePoints, size, weight, imageUrl} = req.body
 
             //les modifier sur la bonne carte
-            const updatedCard = await prisma.pokemonCard.update({
+            const pokemonToUpdate = await prisma.pokemonCard.update({
                 where: {
                     id: cardId
                 },
@@ -96,7 +97,35 @@ export const patchPokemon = async (req: Request, res: Response) => {
                     imageUrl: imageUrl
                 }
             })
-            res.status(200).send(updatedCard);
+            res.status(200).send(pokemonToUpdate);
+        }
+    } catch (error) {
+        res.status(500).send({ error : 'Une erreur est survenue'});
+    }
+}
+
+//########## DELETE ##########
+/**
+ * Supprime une carte avec son Id
+ */
+export const deletePokemon = async (req: Request, res: Response) => {
+    let cardId = parseInt(<string>req.params.pokemonCardId)
+    try {
+        const card = await prisma.pokemonCard.findUnique({
+            where: {
+                id: cardId
+            }
+        });
+        if (!card) {
+            res.status(404).send("Card not found :/")
+            return
+        } else {
+            const pokemonToDelete = await prisma.pokemonCard.delete({
+                where: {
+                    id: cardId
+                }
+            })
+            res.status(200).send(pokemonToDelete);
         }
     } catch (error) {
         res.status(500).send({ error : 'Une erreur est survenue'});

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import {getCards, getPokemon, patchPokemon, postPokemon} from "./pokemons-cards.controller";
+import {deletePokemon, getCards, getPokemon, patchPokemon, postPokemon} from "./pokemons-cards.controller";
 
 export const cardRouter = Router();
 
@@ -16,3 +16,7 @@ cardRouter.post('/', postPokemon)
 //##### PATCH #####
 // modifier les données d'une carte
 cardRouter.patch('/:pokemonCardId', patchPokemon)
+
+//##### DELETE ######
+// supprimer une carte
+cardRouter.delete('/:pokemonCardId', deletePokemon)
