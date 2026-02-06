@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import {deletePokemon, getCards, getPokemon, patchPokemon, postPokemon} from "./pokemons-cards.controller";
+import {deletePokemon, getCards, getPokemon, patchPokemon, postPokemon} from "./pokemon-cards.controller";
 
 export const cardRouter = Router();
 
