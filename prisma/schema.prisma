@@ -8,8 +8,8 @@ datasource db {
 }
 
 model Type {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
+  id    Int           @id @default(autoincrement())
+  name  String        @unique
   cards PokemonCard[] @relation("Card_type")
 }
 
