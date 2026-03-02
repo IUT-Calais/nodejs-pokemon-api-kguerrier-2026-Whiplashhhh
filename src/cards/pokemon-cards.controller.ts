@@ -1,5 +1,5 @@
 import type {Request, Response} from 'express';
-import prisma from "../../client";
+import prisma from "../client";
 
 //########## GET ##########
 /**
@@ -10,7 +10,7 @@ export const getCards = async (_req: Request, res: Response) => {
         let cards = await prisma.pokemonCard.findMany();
         res.status(200).send(cards);
     } catch (error) {
-        res.status(500).send({ error : 'Une erreur est survenue'});
+        res.status(500).send({ error : 'An error occured :/'});
     }
 }
 /**
@@ -31,7 +31,7 @@ export const getPokemon = async (req: Request, res: Response) => {
             res.status(200).send(card);
         }
     } catch (error) {
-        res.status(500).send({ error : 'Une erreur est survenue'});
+        res.status(500).send({ error : 'An error occured :/'});
     }
 }
 
@@ -86,7 +86,7 @@ export const postPokemon = async (req: Request, res: Response) => {
             res.status(201).send(pokemonToCreate)
         }
     } catch (error) {
-        res.status(500).send({ error : 'Une erreur est survenue'});
+        res.status(500).send({ error : 'An error occured :/'});
     }
 }
 
@@ -161,7 +161,7 @@ export const patchPokemon = async (req: Request, res: Response) => {
         res.status(200).send(pokemonToUpdate);
 
     } catch (error) {
-        res.status(500).send({ error : 'Une erreur est survenue'});
+        res.status(500).send({ error : 'An error occured :/'});
     }
 }
 
@@ -189,6 +189,6 @@ export const deletePokemon = async (req: Request, res: Response) => {
             res.status(200).send(pokemonToDelete);
         }
     } catch (error) {
-        res.status(500).send({ error : 'Une erreur est survenue'});
+        res.status(500).send({ error : 'An error occured :/'});
     }
 }

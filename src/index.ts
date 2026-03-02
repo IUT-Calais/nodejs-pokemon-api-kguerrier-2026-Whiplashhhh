@@ -1,13 +1,16 @@
 import express from 'express';
 import type {Request, Response, NextFunction} from 'express';
-import {cardRouter} from "./routes/cards/pokemon-cards.router";
+import {cardRouter} from "./cards/pokemon-cards.router";
+import {usersRouter} from "./user/users.router";
 
 export const app = express();
 
 app.use(express.json());
 
 const port = process.env.PORT || 3000;
-export const server = app.listen(port);
+export const server = app.listen(port, () => {
+  console.log(`Serveur started on port ${port}`);
+});
 
 app.use((req: Request, _res: Response, next: NextFunction) => {
   const timestamp = new Date().toISOString();
@@ -16,6 +19,7 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 });
 
 app.use('/pokemon-cards', cardRouter);
+app.use('/users', usersRouter);
 
 export function stopServer() {
   server.close();
