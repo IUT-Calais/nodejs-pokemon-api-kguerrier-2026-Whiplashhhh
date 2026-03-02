@@ -1,6 +1,8 @@
 import type { Request, Response } from 'express';
 import prisma from "../client";
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import 'dotenv/config'
 
 //########## GET ##########
 /**
@@ -50,5 +52,49 @@ export const postUsers = async (req: Request, res: Response) => {
         res.status(201).send(userToCreate)
     } catch (error) {
         res.status(500).send({ error : 'An error occured :/'})
+    }
+}
+
+/**
+ * Permet de se connecter à l'application
+ */
+export const loginUsers = async (req: Request, res: Response) => {
+    const { email, password } = req.body
+
+    try {
+        // 1. Vérifier que l'utilisateur existe
+        const user = await prisma.user.findUnique({
+            where: {email: email}
+        });
+        if (!user) {
+            res.status(401).send({ error : `This user does not exist` })
+            return
+        }
+        // 2. Vérifier le mot de passe
+        const isPasswordValid = await bcrypt.compare(password, user.password)
+        if (!isPasswordValid) {
+            res.status(401).send({ error: `Incorrect password` })
+            return;
+        }
+        // 3. Générer le JWT
+        const token = jwt.sign(
+            { userId: user.id, email: user.email },
+            process.env.JWT_SECRET as string,
+            { expiresIn: process.env.JWT_EXPIRES_IN },
+        )
+        // 4. Retourner le token
+        res.status(200).send({
+            message: 'Connexion successfull !',
+            token,
+            user: {
+                id: user.id,
+                email: user.email
+            }
+        })
+        return
+    } catch (error) {
+        console.error('Error while login : ', error)
+        res.status(500).send({ error: 'An error occured :/'})
+        return
     }
 }

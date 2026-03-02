@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {postUsers, getUsers} from "./users.controller";
+import {postUsers, getUsers, loginUsers} from "./users.controller";
 
 export const usersRouter = Router();
 
@@ -9,3 +9,5 @@ usersRouter.get('/', getUsers)
 //##### POST #####
 //créer un user
 usersRouter.post('/', postUsers);
+//login
+usersRouter.post('/login', loginUsers)
