@@ -1,7 +1,6 @@
 import type { NextFunction, Request, Response} from "express";
 import jwt from "jsonwebtoken";
 import 'dotenv/config'
-import {anyNumber} from "jest-mock-extended";
 
 declare global {
     namespace Express {
