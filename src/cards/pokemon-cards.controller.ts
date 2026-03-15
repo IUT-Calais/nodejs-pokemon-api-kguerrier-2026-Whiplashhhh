@@ -7,7 +7,7 @@ import prisma from "../client";
  */
 export const getCards = async (_req: Request, res: Response) => {
     try {
-        let cards = await prisma.pokemonCard.findMany();
+        const cards = await prisma.pokemonCard.findMany();
         res.status(200).send(cards);
     } catch (error) {
         res.status(500).send({ error : 'An error occured :/'});
@@ -17,7 +17,7 @@ export const getCards = async (_req: Request, res: Response) => {
  * Récupère une carte spécifique avec son Id
  */
 export const getPokemon = async (req: Request, res: Response) => {
-    let cardId = parseInt(<string>req.params.pokemonCardId)
+    const cardId = parseInt(<string>req.params.pokemonCardId)
     try {
         const card = await prisma.pokemonCard.findUnique({
             where: {
@@ -96,7 +96,7 @@ export const postPokemon = async (req: Request, res: Response) => {
  */
 export const patchPokemon = async (req: Request, res: Response) => {
     //vérifier si la carte existe
-    let cardId = parseInt(<string>req.params.pokemonCardId)
+    const cardId = parseInt(<string>req.params.pokemonCardId)
     //récupérer les données du body (json)
     const {name, pokedexId, typeId, lifePoints, size, weight, imageUrl} = req.body
 
@@ -170,7 +170,7 @@ export const patchPokemon = async (req: Request, res: Response) => {
  * Supprime une carte avec son Id
  */
 export const deletePokemon = async (req: Request, res: Response) => {
-    let cardId = parseInt(<string>req.params.pokemonCardId)
+    const cardId = parseInt(<string>req.params.pokemonCardId)
     try {
         const card = await prisma.pokemonCard.findUnique({
             where: {

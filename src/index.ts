@@ -8,9 +8,14 @@ export const app = express();
 app.use(express.json());
 
 const port = process.env.PORT || 3000;
-export const server = app.listen(port, () => {
-  console.log(`Serveur started on port ${port}`);
-});
+
+export let server: ReturnType<typeof app.listen>;
+
+if (process.env.NODE_ENV !== 'test') {
+  server = app.listen(port, () => {
+    console.log(`Serveur started on port ${port}`);
+  });
+}
 
 app.use((req: Request, _res: Response, next: NextFunction) => {
   const timestamp = new Date().toISOString();
@@ -22,5 +27,5 @@ app.use('/pokemon-cards', cardRouter);
 app.use('/users', usersRouter);
 
 export function stopServer() {
-  server.close();
+  if (server) server.close();
 }

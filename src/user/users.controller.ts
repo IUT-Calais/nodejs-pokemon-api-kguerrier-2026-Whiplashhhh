@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import prisma from "../client";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import type { Secret, SignOptions } from 'jsonwebtoken'
 import 'dotenv/config'
 
 //########## GET ##########
@@ -10,7 +11,7 @@ import 'dotenv/config'
  */
 export const getUsers = async (_req: Request, res: Response) => {
     try {
-        let users = await prisma.user.findMany();
+        const users = await prisma.user.findMany();
         res.status(200).send(users);
     } catch (error) {
         res.status(500).send({ error : 'An error occured :/'})
@@ -77,10 +78,13 @@ export const loginUsers = async (req: Request, res: Response) => {
             return;
         }
         // 3. Générer le JWT
+        const jwtSecret = process.env.JWT_SECRET as Secret
+        const jwtExpiresIn = process.env.JWT_EXPIRES_IN as SignOptions['expiresIn']
+
         const token = jwt.sign(
             { userId: user.id, email: user.email },
-            process.env.JWT_SECRET as string,
-            { expiresIn: process.env.JWT_EXPIRES_IN },
+            jwtSecret,
+            { expiresIn: jwtExpiresIn },
         )
         // 4. Retourner le token
         res.status(200).send({
