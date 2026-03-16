@@ -40,19 +40,38 @@ describe('PokemonCard API', () => {
     });
 
 
-    /*describe('GET /pokemon-cards/:pokemonCardId', () => {
+    describe('GET /pokemon-cards/:pokemonCardId', () => {
         it('should fetch a PokemonCard by ID', async () => {
-            const mockPokemonCard = {};
+            const mockPokemonCard =
+                {
+                    id: 2,
+                    name: 'Charizard',
+                    pokedexId: 6,
+                    typeId: 1,
+                    lifePoints: 78,
+                    size: 1.7,
+                    weight: 90.5,
+                    imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/006.png'
+                };
+
+            prismaMock.pokemonCard.findUnique.mockResolvedValue(mockPokemonCard)
+
+            const response = await request(app).get('/pokemon-cards/2');
 
             expect(response.status).toBe(200);
             expect(response.body).toEqual(mockPokemonCard);
         });
 
         it('should return 404 if PokemonCard is not found', async () => {
+
+            prismaMock.pokemonCard.findUnique.mockResolvedValue(null);
+
+            const response = await request(app).get('/pokemon-cards/1');
+
             expect(response.status).toBe(404);
-            expect(response.body).toEqual({error: 'PokemonCard not found'});
+            expect(response.text).toEqual(`Card not found, Id : "1" doesn't exist :/`);
         });
-    });*/
+    });
 
     /*describe('POST /pokemon-cards', () => {
         it('should create a new PokemonCard', async () => {
