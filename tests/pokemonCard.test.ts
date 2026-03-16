@@ -186,9 +186,40 @@ describe('PokemonCard API', () => {
         });
     });
 
-    /*describe('DELETE /pokemon-cards/:pokemonCardId', () => {
+    describe('DELETE /pokemon-cards/:pokemonCardId', () => {
         it('should delete a PokemonCard', async () => {
-            expect(response.status).toBe(204);
+            const cardToDelete = {
+                id: 3,
+                name: 'Bulbizarre',
+                pokedexId: 1,
+                typeId: 1,
+                lifePoints: 45,
+                size: 0.7,
+                weight: 6.9,
+                imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png',
+            };
+
+            //existe
+            prismaMock.pokemonCard.findUnique.mockResolvedValue(cardToDelete);
+            prismaMock.pokemonCard.delete.mockResolvedValue(cardToDelete);
+
+            const response = await request(app)
+                .delete('/pokemon-cards/3')
+                .set('Authorization', 'Bearer mockedToken');
+
+            expect(response.status).toBe(200);
+            expect(response.body).toEqual(cardToDelete);
         });
-    });*/
+
+        it('should return 404 if PokemonCard does not exist', async () => {
+            prismaMock.pokemonCard.findUnique.mockResolvedValue(null);
+
+            const response = await request(app)
+                .delete('/pokemon-cards/999')
+                .set('Authorization', 'Bearer mockedToken');
+
+            expect(response.status).toBe(404);
+            expect(response.text).toBe(`Card not found, Id : "999" doesn't exist :/`);
+        });
+    });
 });
