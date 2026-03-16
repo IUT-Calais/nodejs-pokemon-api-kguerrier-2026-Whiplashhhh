@@ -73,9 +73,8 @@ describe('PokemonCard API', () => {
         });
     });
 
-    /*describe('POST /pokemon-cards', () => {
+    describe('POST /pokemon-cards', () => {
         it('should create a new PokemonCard', async () => {
-            //fausse donnée censée être renvoyée par prisma
             const createdPokemonCard = {
                 id: 3,
                 name: "Bulbizarre",
@@ -111,12 +110,10 @@ describe('PokemonCard API', () => {
                     imageUrl: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png"
                 });
 
-            console.log('Response body:', response.body);
-
             expect(response.status).toBe(201);
             expect(response.body).toEqual(createdPokemonCard);
         });
-    });*/
+    });
 
     /*describe('PATCH /pokemon-cards/:pokemonCardId', () => {
         it('should update an existing PokemonCard', async () => {
