@@ -41,7 +41,8 @@ export const postUsers = async (req: Request, res: Response) => {
             return
         }
         if (password.length < 6) {
-            res.status(400).send(`Password should be at least 6 character long`)
+            res.status(400).send(`Password should be at least 6 character long`);
+            return
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const userToCreate = await prisma.user.create({
