@@ -5,6 +5,14 @@ const config: Config = {
   transform: {
     '^.+.tsx?$': ['ts-jest', {}],
   },
+  testPathIgnorePatterns: ['/build/', '/node_modules/'],
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/client.ts',
+    '!src/index.ts',
+  ],
+  coveragePathIgnorePatterns: ['/build/', '/node_modules/'],
   coverageThreshold: {
     global: {
       branches: 100,
