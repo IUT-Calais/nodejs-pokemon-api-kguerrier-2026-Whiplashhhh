@@ -1,8 +1,8 @@
-import type { Request, Response } from 'express';
+import type {Request, Response} from 'express';
 import prisma from "../client";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import type { Secret, SignOptions } from 'jsonwebtoken'
+import type {Secret, SignOptions} from 'jsonwebtoken'
 import 'dotenv/config'
 
 //########## GET ##########
@@ -14,7 +14,30 @@ export const getUsers = async (_req: Request, res: Response) => {
         const users = await prisma.user.findMany();
         res.status(200).send(users);
     } catch (error) {
-        res.status(500).send({ error : 'An error occured :/'})
+        res.status(500).send({error: 'An error occured :/'})
+    }
+}
+
+/**
+ * Récupère les infos d'un utilisateur à l'aide de son userId
+ */
+export const getUser = async (req: Request, res: Response) => {
+    //récupérer userId
+    const userId = parseInt(<string>req.params.userId)
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+        if (!user) {
+            res.status(404).send(`User not found, Id : "${userId}" doesn't exist :/`)
+            return
+        } else {
+            res.status(200).send(user);
+        }
+    } catch (error) {
+        res.status(500).send({error: `An error occured :/`});
     }
 }
 
@@ -53,7 +76,7 @@ export const postUsers = async (req: Request, res: Response) => {
         })
         res.status(201).send(userToCreate)
     } catch (error) {
-        res.status(500).send({ error : 'An error occured :/'})
+        res.status(500).send({error: 'An error occured :/'})
     }
 }
 
@@ -61,7 +84,7 @@ export const postUsers = async (req: Request, res: Response) => {
  * Permet de se connecter à l'application
  */
 export const loginUsers = async (req: Request, res: Response) => {
-    const { email, password } = req.body
+    const {email, password} = req.body
 
     try {
         // 1. Vérifier que l'utilisateur existe
@@ -69,13 +92,13 @@ export const loginUsers = async (req: Request, res: Response) => {
             where: {email: email}
         });
         if (!user) {
-            res.status(401).send({ error : `This user does not exist` })
+            res.status(401).send({error: `This user does not exist`})
             return
         }
         // 2. Vérifier le mot de passe
         const isPasswordValid = await bcrypt.compare(password, user.password)
         if (!isPasswordValid) {
-            res.status(401).send({ error: `Incorrect password` })
+            res.status(401).send({error: `Incorrect password`})
             return;
         }
         // 3. Générer le JWT
@@ -83,9 +106,9 @@ export const loginUsers = async (req: Request, res: Response) => {
         const jwtExpiresIn = process.env.JWT_EXPIRES_IN as SignOptions['expiresIn']
 
         const token = jwt.sign(
-            { userId: user.id, email: user.email },
+            {userId: user.id, email: user.email},
             jwtSecret,
-            { expiresIn: jwtExpiresIn },
+            {expiresIn: jwtExpiresIn},
         )
         // 4. Retourner le token
         res.status(200).send({
@@ -99,7 +122,89 @@ export const loginUsers = async (req: Request, res: Response) => {
         return
     } catch (error) {
         console.error('Error while login : ', error)
-        res.status(500).send({ error: 'An error occured :/'})
+        res.status(500).send({error: 'An error occured :/'})
         return
+    }
+}
+
+//########## PATCH ##########
+/**
+ * Modifie les infos d'un utilisateur
+ */
+export const patchUser = async (req: Request, res: Response) => {
+    //vérifier si le user existe
+    const userId = parseInt(<string>req.params.userId)
+    //récupérer les données du body
+    const {email, password} = req.body
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+
+        if (!user) {
+            res.status(404).send(`User not found, Id : "${userId}" doesn't exist :/`)
+            return;
+        }
+
+        if (email && email !== user.email) {
+            const userEmail = await prisma.user.findUnique({
+                where: {
+                    email: email
+                }
+            });
+            if (userEmail) {
+                res.status(400).send(`Email "${email}" is already taken :/`);
+                return;
+            }
+        }
+        if (password && password.length < 6) {
+            res.status(400).send(`Password should be at least 6 character long`);
+            return
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const userToUpdate = await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                email: email,
+                password: hashedPassword
+            }
+        });
+        res.status(200).send(userToUpdate);
+    } catch (error) {
+        res.status(500).send({error: 'An error occured :/'});
+    }
+}
+
+//########## DELETE ##########
+/**
+ * Supprime un utilisateur
+ */
+export const deleteUser = async (req: Request, res: Response) => {
+    const userId = parseInt(<string>req.params.userId)
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+
+        if (!user) {
+            res.status(404).send(`User not found, Id : "${userId}" doesn't exist :/`)
+            return;
+        } else {
+            const userToDelete = await prisma.user.delete({
+                where: {
+                    id: userId
+                }
+            });
+            res.status(200).send(userToDelete);
+        }
+    } catch (error) {
+        res.status(500).send({ error : `An error occured :/`});
     }
 }
