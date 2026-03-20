@@ -302,6 +302,151 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
+  /users/{userId}:
+    get:
+      tags: [ Users ]
+      summary: Récupérer un utilisateur par son ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Utilisateur trouvé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Utilisateur non trouvé
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "User not found, Id : \"1\" doesn't exist :/"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+    patch:
+      tags: [ Users ]
+      summary: Modifier un utilisateur
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPatch"
+      responses:
+        "200":
+          description: Utilisateur mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Erreur de validation (email déjà utilisé ou mot de passe trop court)
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Email \"user@mail.com\" is already taken :/"
+        "401":
+          description: Token manquant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Missing token
+        "403":
+          description: Token invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid token
+        "404":
+          description: Utilisateur non trouvé
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "User not found, Id : \"999\" doesn't exist :/"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+    delete:
+      tags: [ Users ]
+      summary: Supprimer un utilisateur
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Utilisateur supprimé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Token manquant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Missing token
+        "403":
+          description: Token invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid token
+        "404":
+          description: Utilisateur non trouvé
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "User not found, Id : \"999\" doesn't exist :/"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
 components:
   securitySchemes:
     bearerAuth:
@@ -411,6 +556,17 @@ components:
           type: string
           example: secret123
       required: [email, password]
+
+    UserPatch:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@mail.com
+        password:
+          type: string
+          example: secret123
 
     LoginRequest:
       type: object
