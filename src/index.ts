@@ -2,6 +2,9 @@ import express from 'express';
 import type {Request, Response, NextFunction} from 'express';
 import {cardRouter} from "./cards/pokemon-cards.router";
 import {usersRouter} from "./user/users.router";
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
+import path from'path';
 
 export const app = express();
 
@@ -16,6 +19,10 @@ if (process.env.NODE_ENV !== 'test') {
     console.log(`Serveur started on port ${port}`);
   });
 }
+
+// Swagger
+const swaggerDocument = YAML.load(path.join(__dirname, './swagger.yaml'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 app.use((req: Request, _res: Response, next: NextFunction) => {
   const timestamp = new Date().toISOString();

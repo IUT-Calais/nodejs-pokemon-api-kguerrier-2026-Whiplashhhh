@@ -1,0 +1,452 @@
+openapi: 3.0.0
+info:
+  title: Pokemon Cards API
+  version: 1.0.0
+  description: API pour gérer ses cartes pokémons et les utilisateurs
+servers:
+  - url: http://localhost:3000
+    description: Serveur local
+
+paths:
+  /pokemon-cards:
+    get:
+      tags: [PokemonCards]
+      summary: Récupérer toutes les cartes Pokémon
+      responses:
+        "200":
+          description: Liste des cartes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PokemonCard"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+    post:
+      tags: [ PokemonCards ]
+      summary: Créer une carte Pokemon
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PokemonCardCreate"
+      responses:
+        "201":
+          description: Carte créée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PokemonCard"
+        "400":
+          description: Données invalides ou doublon
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Some fields are missing !
+        "401":
+          description: Token manquant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Missing token
+        "403":
+          description: Token invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid token
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /pokemon-cards/{pokemonCardId}:
+    get:
+      tags: [ PokemonCards ]
+      summary: Récupérer une carte par son ID
+      parameters:
+        - name: pokemonCardId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Carte trouvée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PokemonCard"
+        "404":
+          description: Carte non trouvée
+          content:
+            text/plain:
+              schema:
+                type: string
+                example:
+                  "Card not found, Id: '1' doesn't exist :/"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+    patch:
+      tags: [ PokemonCards ]
+      summary: Modifier une carte Pokémon
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: pokemonCardId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PokemonCardPatch"
+      responses:
+        "200":
+          description: Carte mise a jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PokemonCard"
+        "400":
+          description: Erreur de validation (doublon)
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Name 'Charizard' is already taken :/"
+        "401":
+          description: Token manquant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Missing token
+        "403":
+          description: Token invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid token
+        "404":
+          description: Carte ou type non trouvé
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Card not found, Id: '999' doesn't exist :/"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+    delete:
+      tags: [ PokemonCards ]
+      summary: Supprimer une carte Pokémon
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: pokemonCardId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Carte supprimée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PokemonCard"
+        "401":
+          description: Token manquant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Missing token
+        "403":
+          description: Token invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid token
+        "404":
+          description: Carte non trouvée
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Card not found, Id: '999' doesn't exist :/"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /users:
+    get:
+      tags: [ Users ]
+      summary: Récupérer tous les utilisateurs
+      responses:
+        "200":
+          description: Liste des utilisateurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
+    post:
+      tags: [ Users ]
+      summary: Créer un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreate"
+      responses:
+        "201":
+          description: Utilisateur créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Données invalides
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Mail or password is missing :/"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /users/login:
+    post:
+      tags: [ Users ]
+      summary: Connecter un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          description: Identifiants invalides
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    PokemonCard:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Bulbizarre
+        pokedexId:
+          type: integer
+          example: 1
+        typeId:
+          type: integer
+          example: 1
+        lifePoints:
+          type: integer
+          example: 45
+        size:
+          type: number
+          format: float
+          nullable: true
+          example: 0.7
+        weight:
+          type: number
+          format: float
+          nullable: true
+          example: 6.9
+        imageUrl:
+          type: string
+          nullable: true
+          example: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png"
+      required: [id, name, pokedexId, typeId, lifePoints]
+
+    PokemonCardCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        pokedexId:
+          type: integer
+        typeId:
+          type: integer
+        lifePoints:
+          type: integer
+        size:
+          type: number
+          format: float
+        weight:
+          type: number
+          format: float
+        imageUrl:
+          type: string
+      required: [name, pokedexId, typeId, lifePoints]
+
+    PokemonCardPatch:
+      type: object
+      properties:
+        name:
+          type: string
+        pokedexId:
+          type: integer
+        typeId:
+          type: integer
+        lifePoints:
+          type: integer
+        size:
+          type: number
+          format: float
+        weight:
+          type: number
+          format: float
+        imageUrl:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          format: email
+          example: admin@gmail.com
+        password:
+          type: string
+          example: "$2b$10$..."
+      required: [id, email, password]
+
+    UserCreate:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@mail.com
+        password:
+          type: string
+          example: secret123
+      required: [email, password]
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required: [email, password]
+
+    LoginResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Connexion successfull !
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 3
+            email:
+              type: string
+              format: email
+              example: 3@mail.com
+          required: [id, email]
+      required: [message, token, user]
+
+    ErrorObject:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "An error occured :/"
