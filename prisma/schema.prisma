@@ -8,25 +8,28 @@ datasource db {
 }
 
 model Type {
-  id    Int           @id @default(autoincrement())
-  name  String        @unique
-  cards PokemonCard[] @relation("Card_type")
+  id         Int           @id @default(autoincrement())
+  name       String        @unique
+  cards      PokemonCard[] @relation("Card_type")
+  weaknesses PokemonCard[] @relation("Card_weakness")
 }
 
 model PokemonCard {
-  id            Int         @id @default(autoincrement())
-  name          String      @unique
-  pokedexId     Int         @unique
-  type          Type        @relation(name: "Card_type", fields: [typeId], references: [id])
-  typeId        Int
-  lifePoints    Int
-  size          Float?
-  weight        Float?
-  imageUrl      String?
+  id         Int     @id @default(autoincrement())
+  name       String  @unique
+  pokedexId  Int     @unique
+  type       Type    @relation(name: "Card_type", fields: [typeId], references: [id])
+  typeId     Int
+  lifePoints Int
+  size       Float?
+  weight     Float?
+  imageUrl   String?
+  weakness   Type?   @relation(name: "Card_weakness", fields: [weaknessId], references: [id])
+  weaknessId Int?
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
-  email     String  @unique
-  password  String
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
 }

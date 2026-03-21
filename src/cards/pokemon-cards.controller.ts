@@ -10,7 +10,7 @@ export const getCards = async (_req: Request, res: Response) => {
         const cards = await prisma.pokemonCard.findMany();
         res.status(200).send(cards);
     } catch (error) {
-        res.status(500).send({ error : 'An error occured :/'});
+        res.status(500).send({error: 'An error occured :/'});
     }
 }
 /**
@@ -31,7 +31,7 @@ export const getPokemon = async (req: Request, res: Response) => {
             res.status(200).send(card);
         }
     } catch (error) {
-        res.status(500).send({ error : 'An error occured :/'});
+        res.status(500).send({error: 'An error occured :/'});
     }
 }
 
@@ -41,7 +41,7 @@ export const getPokemon = async (req: Request, res: Response) => {
  */
 export const postPokemon = async (req: Request, res: Response) => {
     //récupérer les données du body (json)
-    const {name, pokedexId, typeId, lifePoints, size, weight, imageUrl} = req.body
+    const {name, pokedexId, typeId, lifePoints, size, weight, imageUrl, weaknessId} = req.body
 
     try {
         if (!name || !pokedexId || !typeId || !lifePoints) {
@@ -51,6 +51,11 @@ export const postPokemon = async (req: Request, res: Response) => {
         const type = await prisma.type.findUnique({
             where: {
                 id: typeId
+            }
+        });
+        const weakness = await prisma.type.findUnique({
+            where: {
+                id: weaknessId
             }
         });
         const cardName = await prisma.pokemonCard.findUnique({
@@ -66,12 +71,13 @@ export const postPokemon = async (req: Request, res: Response) => {
         if (cardName || cardPokedexId) {
             res.status(400).send(`Name "${name}" or pokedexId "${pokedexId}" is already taken :/`);
             return
-        }
-        else if (!type) {
+        } else if (!type) {
             res.status(400).send(`Type not found, Id : "${typeId}" doesn't exist :/`);
             return
-        }
-        else {
+        } else if (!weakness) {
+            res.status(400).send(`Weakness type not found, Id : "${weaknessId}" doesn't exist :/`);
+            return
+        } else {
             const pokemonToCreate = await prisma.pokemonCard.create({
                 data: {
                     name: name,
@@ -80,13 +86,14 @@ export const postPokemon = async (req: Request, res: Response) => {
                     lifePoints: lifePoints,
                     size: size,
                     weight: weight,
-                    imageUrl: imageUrl
+                    imageUrl: imageUrl,
+                    weaknessId: weaknessId
                 }
             })
             res.status(201).send(pokemonToCreate)
         }
     } catch (error) {
-        res.status(500).send({ error : 'An error occured :/'});
+        res.status(500).send({error: 'An error occured :/'});
     }
 }
 
@@ -98,7 +105,7 @@ export const patchPokemon = async (req: Request, res: Response) => {
     //vérifier si la carte existe
     const cardId = parseInt(<string>req.params.pokemonCardId)
     //récupérer les données du body (json)
-    const {name, pokedexId, typeId, lifePoints, size, weight, imageUrl} = req.body
+    const {name, pokedexId, typeId, lifePoints, size, weight, imageUrl, weaknessId} = req.body
 
     try {
         const card = await prisma.pokemonCard.findUnique({
@@ -118,6 +125,17 @@ export const patchPokemon = async (req: Request, res: Response) => {
             });
             if (!type) {
                 res.status(404).send(`Type not found, Id : "${typeId}" doesn't exist :/`)
+                return
+            }
+        }
+        if (weaknessId) {
+            const weakness = await prisma.type.findUnique({
+                where: {
+                    id: weaknessId
+                }
+            });
+            if (!weakness) {
+                res.status(404).send(`Weakness type not found, Id : "${weaknessId}" doesn't exist :/`)
                 return
             }
         }
@@ -155,13 +173,14 @@ export const patchPokemon = async (req: Request, res: Response) => {
                 lifePoints: lifePoints,
                 size: size,
                 weight: weight,
-                imageUrl: imageUrl
+                imageUrl: imageUrl,
+                weaknessId: weaknessId
             }
         })
         res.status(200).send(pokemonToUpdate);
 
     } catch (error) {
-        res.status(500).send({ error : 'An error occured :/'});
+        res.status(500).send({error: 'An error occured :/'});
     }
 }
 
@@ -189,6 +208,6 @@ export const deletePokemon = async (req: Request, res: Response) => {
             res.status(200).send(pokemonToDelete);
         }
     } catch (error) {
-        res.status(500).send({ error : 'An error occured :/'});
+        res.status(500).send({error: 'An error occured :/'});
     }
 }

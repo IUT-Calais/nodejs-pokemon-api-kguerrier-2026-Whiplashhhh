@@ -13,6 +13,7 @@ describe('PokemonCard API', () => {
                     name: 'Charmander',
                     pokedexId: 4,
                     typeId: 1,
+                    weaknessId: 2,
                     lifePoints: 30,
                     size: 1,
                     weight: 25,
@@ -23,6 +24,7 @@ describe('PokemonCard API', () => {
                     name: 'Charizard',
                     pokedexId: 6,
                     typeId: 1,
+                    weaknessId: 2,
                     lifePoints: 78,
                     size: 1.7,
                     weight: 90.5,
@@ -57,6 +59,7 @@ describe('PokemonCard API', () => {
                     name: 'Charizard',
                     pokedexId: 6,
                     typeId: 1,
+                    weaknessId: 2,
                     lifePoints: 78,
                     size: 1.7,
                     weight: 90.5,
@@ -98,6 +101,7 @@ describe('PokemonCard API', () => {
                 name: "Bulbizarre",
                 pokedexId: 1,
                 typeId: 1,
+                weaknessId: 3,
                 lifePoints: 45,
                 size: 0.7,
                 weight: 6.9,
@@ -106,6 +110,9 @@ describe('PokemonCard API', () => {
 
             //vérif du type
             prismaMock.type.findUnique.mockResolvedValue({ id: 1, name: 'Grass' });
+
+            //vérif de la faiblesse
+            prismaMock.type.findUnique.mockResolvedValue({ id: 3, name: 'Fire' });
 
             //vérif du nom
             prismaMock.pokemonCard.findUnique.mockResolvedValueOnce(null)   // par name -> pas trouvé
@@ -121,6 +128,7 @@ describe('PokemonCard API', () => {
                     name: "Bulbizarre",
                     pokedexId: 1,
                     typeId: 1,
+                    weaknessId: 3,
                     lifePoints: 45,
                     size: 0.7,
                     weight: 6.9,
@@ -150,6 +158,7 @@ describe('PokemonCard API', () => {
                 name: "Bulbizarre",
                 pokedexId: 1,
                 typeId: 1,
+                weaknessId: 3,
                 lifePoints: 45,
                 size: 0.7,
                 weight: 6.9,
@@ -166,6 +175,7 @@ describe('PokemonCard API', () => {
                     name: "Bulbizarre",
                     pokedexId: 2,
                     typeId: 1,
+                    weaknessId: 3,
                     lifePoints: 45,
                     size: 0.7,
                     weight: 6.9,
@@ -182,6 +192,7 @@ describe('PokemonCard API', () => {
                 name: "Charmander",
                 pokedexId: 1,
                 typeId: 1,
+                weaknessId: 2,
                 lifePoints: 39,
                 size: 0.6,
                 weight: 8.5,
@@ -199,6 +210,7 @@ describe('PokemonCard API', () => {
                     name: "Bulbizarre",
                     pokedexId: 1,
                     typeId: 1,
+                    weaknessId: 3,
                     lifePoints: 45,
                     size: 0.7,
                     weight: 6.9,
@@ -231,6 +243,30 @@ describe('PokemonCard API', () => {
             expect(response.text).toBe(`Type not found, Id : "999" doesn't exist :/`);
         });
 
+        it('should return 400 when weaknessId does not exist', async () => {
+            prismaMock.type.findUnique.mockResolvedValueOnce({ id: 1, name: 'Grass' });  // type existe
+            prismaMock.pokemonCard.findUnique.mockResolvedValueOnce(null);  // par name -> pas trouvé
+            prismaMock.pokemonCard.findUnique.mockResolvedValueOnce(null);  // par pokedexId -> pas trouvé
+            prismaMock.type.findUnique.mockResolvedValueOnce(null);  // weakness inexistant
+
+            const response = await request(app)
+                .post('/pokemon-cards')
+                .set('Authorization', 'Bearer mockedToken')
+                .send({
+                    name: "Bulbizarre",
+                    pokedexId: 1,
+                    typeId: 1,
+                    weaknessId: 999,
+                    lifePoints: 45,
+                    size: 0.7,
+                    weight: 6.9,
+                    imageUrl: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png"
+                });
+
+            expect(response.status).toBe(400);
+            expect(response.text).toBe(`Weakness type not found, Id : "999" doesn't exist :/`);
+        });
+
         it('should return 500 when creating PokemonCard fails', async () => {
             prismaMock.type.findUnique.mockResolvedValue({ id: 1, name: 'Grass' });
             prismaMock.pokemonCard.findUnique.mockResolvedValueOnce(null);  // par name
@@ -244,6 +280,7 @@ describe('PokemonCard API', () => {
                     name: "Bulbizarre",
                     pokedexId: 1,
                     typeId: 1,
+                    weaknessId: 3,
                     lifePoints: 45,
                     size: 0.7,
                     weight: 6.9,
@@ -277,6 +314,7 @@ describe('PokemonCard API', () => {
                 name: "Bulbizarre",
                 pokedexId: 1,
                 typeId: 1,
+                weaknessId: 3,
                 lifePoints: 45,
                 size: 0.7,
                 weight: 6.9,
@@ -323,6 +361,7 @@ describe('PokemonCard API', () => {
                 name: 'Bulbizarre',
                 pokedexId: 1,
                 typeId: 1,
+                weaknessId: 3,
                 lifePoints: 45,
                 size: 0.7,
                 weight: 6.9,
@@ -340,12 +379,37 @@ describe('PokemonCard API', () => {
             expect(response.text).toBe(`Type not found, Id : "999" doesn't exist :/`);
         });
 
+        it('should return 404 if weaknessId does not exist', async () => {
+            prismaMock.pokemonCard.findUnique.mockResolvedValue({
+                id: 3,
+                name: 'Bulbizarre',
+                pokedexId: 1,
+                typeId: 1,
+                weaknessId: 3,
+                lifePoints: 45,
+                size: 0.7,
+                weight: 6.9,
+                imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png',
+            });
+
+            prismaMock.type.findUnique.mockResolvedValue(null);
+
+            const response = await request(app)
+                .patch('/pokemon-cards/3')
+                .set('Authorization', 'Bearer mockedToken')
+                .send({ weaknessId: 999 });
+
+            expect(response.status).toBe(404);
+            expect(response.text).toBe(`Weakness type not found, Id : "999" doesn't exist :/`);
+        });
+
         it('should return 400 when name is already taken by another card', async () => {
             const existingCard = {
                 id: 3,
                 name: 'Bulbizarre',
                 pokedexId: 1,
                 typeId: 1,
+                weaknessId: 3,
                 lifePoints: 45,
                 size: 0.7,
                 weight: 6.9,
@@ -357,6 +421,7 @@ describe('PokemonCard API', () => {
                 name: 'Charizard',
                 pokedexId: 6,
                 typeId: 1,
+                weaknessId: 2,
                 lifePoints: 78,
                 size: 1.7,
                 weight: 90.5,
@@ -383,6 +448,7 @@ describe('PokemonCard API', () => {
                 name: 'Bulbizarre',
                 pokedexId: 1,
                 typeId: 1,
+                weaknessId: 3,
                 lifePoints: 45,
                 size: 0.7,
                 weight: 6.9,
@@ -394,6 +460,7 @@ describe('PokemonCard API', () => {
                 name: 'Charizard',
                 pokedexId: 6,
                 typeId: 1,
+                weaknessId: 2,
                 lifePoints: 78,
                 size: 1.7,
                 weight: 90.5,
@@ -420,6 +487,7 @@ describe('PokemonCard API', () => {
                 name: 'Bulbizarre',
                 pokedexId: 1,
                 typeId: 1,
+                weaknessId: 3,
                 lifePoints: 45,
                 size: 0.7,
                 weight: 6.9,
@@ -449,6 +517,7 @@ describe('PokemonCard API', () => {
                 name: 'Bulbizarre',
                 pokedexId: 1,
                 typeId: 1,
+                weaknessId: 3,
                 lifePoints: 45,
                 size: 0.7,
                 weight: 6.9,
@@ -478,6 +547,7 @@ describe('PokemonCard API', () => {
                 name: 'Bulbizarre',
                 pokedexId: 1,
                 typeId: 1,
+                weaknessId: 3,
                 lifePoints: 45,
                 size: 0.7,
                 weight: 6.9,
@@ -523,6 +593,7 @@ describe('PokemonCard API', () => {
                 name: 'Bulbizarre',
                 pokedexId: 1,
                 typeId: 1,
+                weaknessId: 3,
                 lifePoints: 45,
                 size: 0.7,
                 weight: 6.9,
@@ -569,6 +640,7 @@ describe('PokemonCard API', () => {
                 name: 'Bulbizarre',
                 pokedexId: 1,
                 typeId: 1,
+                weaknessId: 3,
                 lifePoints: 45,
                 size: 0.7,
                 weight: 6.9,
