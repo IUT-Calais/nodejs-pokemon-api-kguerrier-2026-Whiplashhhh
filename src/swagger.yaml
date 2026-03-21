@@ -470,6 +470,10 @@ components:
         typeId:
           type: integer
           example: 1
+        weaknessId:
+          type: integer
+          nullable: true
+          example: 3
         lifePoints:
           type: integer
           example: 45
@@ -498,6 +502,8 @@ components:
           type: integer
         typeId:
           type: integer
+        weaknessId:
+          type: integer
         lifePoints:
           type: integer
         size:
@@ -518,6 +524,8 @@ components:
         pokedexId:
           type: integer
         typeId:
+          type: integer
+        weaknessId:
           type: integer
         lifePoints:
           type: integer
